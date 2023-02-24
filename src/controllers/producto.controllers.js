@@ -6,7 +6,7 @@ export const listarProductos = async(req, res)=>{
         //buscar en la BD la collection de productos
         const productos = await Producto.find();
         //envio la respuesta al frontend
-        res.status(200).json(productos); 
+        res.status(200).json(productos );    
     } catch (error) {
         console.log(error);
         res.status(404).json({
