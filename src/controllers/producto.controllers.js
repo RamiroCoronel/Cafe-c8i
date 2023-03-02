@@ -1,4 +1,5 @@
-import { json } from "express";
+import { json, response } from "express";
+import { validationResult } from "express-validator";
 import Producto from "../models/producto"
 
 export const listarProductos = async(req, res)=>{ 
@@ -26,14 +27,24 @@ const productoBuscado = await Producto.findById(req.params.id)
 res.status(200).json(productoBuscado);    
     } catch (error) {
         console.log(error);
-        res.status(404).json({
+     return res.status(404).json({
             mensaje:"Error no se encontro el producto buscado"
         })
     }
 }
 
 export const crearProductos =async(req, res)=>{ 
-try { console.log(req.body)
+try { 
+    //trabajar con el resultado de la validacion
+    const errors = validationResult(req);
+    //errors.isEmpty() true:si esta bien, false: si hay 1 error
+    if(!errors.isEmpty()){
+        res.status(400).json({
+            errores: errors.array()
+        })
+    }  
+
+    console.log(req.body)
     //tomar body y validarlo
     //guardar ese objeto en la BD
     const productoNuevo = new Producto(req.body);
@@ -71,6 +82,7 @@ export const editarProducto = async(req, res)=>{
 
 export const borrarProducto = async(req, res)=>{
     try {
+
        //buscar el id de la ruta y luego pedir a la BD ese producto
        await Producto.findByIdAndDelete(req.params.id);
        //enviar respuesta frontend
